@@ -10,15 +10,44 @@
  */
 package casestudy3;
 
+import java.io.IOException;
+import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+
 /**
  *
  * @author quanmt
  */
 public class App extends javax.swing.JFrame {
 
+    protected Client client;
+    protected ButtonGroup group;
+    protected ServerSocket serverSocket;
+    
     /** Creates new form App */
     public App() {
         initComponents();
+        
+        group = new ButtonGroup();
+        group.add(hostRadio);
+        group.add(guestRadio);
+    }
+
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+    
+    private int getPort() {
+        return Integer.valueOf(this.portTextField.getText());
+    }
+    
+    private boolean isHost() {
+        if (this.hostRadio.isSelected()) {
+            return true;
+        }
+        return false;
     }
 
     /** This method is called from within the constructor to
@@ -30,98 +59,116 @@ public class App extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        typeOptionGroup = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        hostIPLabel = new javax.swing.JLabel();
         hostTextField = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        portLabel = new javax.swing.JLabel();
         portTextField = new javax.swing.JTextField();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton1 = new javax.swing.JRadioButton();
+        hostRadio = new javax.swing.JRadioButton();
+        guestRadio = new javax.swing.JRadioButton();
         connectButton = new javax.swing.JButton();
         disconnectButton = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        connectionStatus = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         messagesTextArea = new javax.swing.JTextArea();
         message = new javax.swing.JTextField();
         chatButton = new javax.swing.JButton();
 
+        typeOptionGroup.add(this.hostRadio);
+        typeOptionGroup.add(this.guestRadio);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Host IP:");
+        hostIPLabel.setText("Host IP:");
 
-        jLabel2.setText("Port:");
+        hostTextField.setText("127.0.0.1");
 
-        jRadioButton2.setText("Host");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+        portLabel.setText("Port:");
+
+        portTextField.setText("9998");
+
+        hostRadio.setSelected(true);
+        hostRadio.setText("Host");
+        hostRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
+                hostRadioActionPerformed(evt);
             }
         });
 
-        jRadioButton1.setText("Guest");
+        guestRadio.setText("Guest");
 
         connectButton.setText("Connect");
+        connectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectButtonActionPerformed(evt);
+            }
+        });
 
         disconnectButton.setText("Disconnect");
+        disconnectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                disconnectButtonActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setText("Connected");
+        connectionStatus.setText("Disconnected");
 
         org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
+                .add(18, 18, 18)
+                .add(connectButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .add(18, 18, 18)
+                .add(disconnectButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 133, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
                 .add(56, 56, 56)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(jPanel1Layout.createSequentialGroup()
-                        .add(jLabel1)
+                        .add(hostIPLabel)
                         .add(18, 18, 18)
                         .add(hostTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 142, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                     .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(jPanel1Layout.createSequentialGroup()
-                            .add(jRadioButton2)
+                            .add(hostRadio)
                             .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 79, Short.MAX_VALUE)
-                            .add(jRadioButton1))
+                            .add(guestRadio))
                         .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                            .add(jLabel2)
+                            .add(portLabel)
                             .add(18, 18, 18)
                             .add(portTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 142, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(53, Short.MAX_VALUE))
+                .add(53, 53, 53))
             .add(org.jdesktop.layout.GroupLayout.TRAILING, jPanel1Layout.createSequentialGroup()
-                .add(17, 17, 17)
-                .add(connectButton, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(disconnectButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 146, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .add(connectionStatus, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
                 .addContainerGap())
-            .add(jPanel1Layout.createSequentialGroup()
-                .add(37, 37, 37)
-                .add(jLabel3)
-                .addContainerGap(214, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel1)
+                    .add(hostIPLabel)
                     .add(hostTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jLabel2)
+                    .add(portLabel)
                     .add(portTextField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jRadioButton2)
-                    .add(jRadioButton1))
+                    .add(hostRadio)
+                    .add(guestRadio))
                 .add(18, 18, 18)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(connectButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 89, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(disconnectButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 88, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(disconnectButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 88, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(connectButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 89, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .add(18, 18, 18)
-                .add(jLabel3)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .add(connectionStatus)
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         messagesTextArea.setColumns(20);
@@ -129,22 +176,30 @@ public class App extends javax.swing.JFrame {
         jScrollPane1.setViewportView(messagesTextArea);
 
         chatButton.setText("Chat");
+        chatButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chatButtonActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
             .add(jPanel2Layout.createSequentialGroup()
-                .add(message, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 382, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(chatButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 103, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(9, 9, 9))
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(message, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 301, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .add(chatButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 103, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 227, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 207, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(message, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 48, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -164,15 +219,49 @@ public class App extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+            .add(jPanel2, 0, 295, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+    private void hostRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hostRadioActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+    }//GEN-LAST:event_hostRadioActionPerformed
+
+    private void connectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectButtonActionPerformed
+        if (this.isHost()) {
+            Server server = new Server(this, this.getPort());
+            server.start();
+        } else {
+            Socket socket = null;
+            try {
+                socket = new Socket(this.hostTextField.getText(), this.getPort());
+                this.changeStatus("Connected to server");
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            client = new Client(socket, this);
+            client.start();
+        }
+    }//GEN-LAST:event_connectButtonActionPerformed
+
+    private void chatButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chatButtonActionPerformed
+        String message = this.message.getText();
+        this.addMessage("Outgoing: " + message);
+        this.client.send(message);
+        this.message.setText("");
+    }//GEN-LAST:event_chatButtonActionPerformed
+
+    private void disconnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disconnectButtonActionPerformed
+        this.disconnect();
+    }//GEN-LAST:event_disconnectButtonActionPerformed
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     /**
      * @param args the command line arguments
@@ -210,21 +299,45 @@ public class App extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton chatButton;
     private javax.swing.JButton connectButton;
+    private javax.swing.JLabel connectionStatus;
     private javax.swing.JButton disconnectButton;
+    private javax.swing.JRadioButton guestRadio;
+    private javax.swing.JLabel hostIPLabel;
+    private javax.swing.JRadioButton hostRadio;
     private javax.swing.JTextField hostTextField;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField message;
     private javax.swing.JTextArea messagesTextArea;
+    private javax.swing.JLabel portLabel;
     private javax.swing.JTextField portTextField;
+    private javax.swing.ButtonGroup typeOptionGroup;
     // End of variables declaration//GEN-END:variables
+
+    void addMessage(String message) {
+        this.messagesTextArea.append(message + "\n");
+    }
+
+    void startChatting() {
+        
+    }
+    
+    public void changeStatus(String status) {
+        this.connectionStatus.setText(status);
+    }
+
+    void disconnect() {
+        this.changeStatus("Disconnected");
+        this.client.disconnect();
+        try {
+            if (this.serverSocket != null) {
+                this.serverSocket.close();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
